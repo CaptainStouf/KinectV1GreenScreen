@@ -301,6 +301,8 @@ namespace Microsoft.Samples.Kinect.BackgroundRemovalBasics
                     // Add an event handler to be called whenever there is new depth frame data
                     args.NewSensor.AllFramesReady += this.SensorAllFramesReady;
 
+                    desiredAngle.Text = this.sensorChooser.Kinect.ElevationAngle.ToString();
+
                     try
                     {
                         args.NewSensor.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
@@ -408,6 +410,35 @@ namespace Microsoft.Samples.Kinect.BackgroundRemovalBasics
             }
             catch (InvalidOperationException)
             {
+            }
+        }
+
+        private void desiredAngle_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (null == this.sensorChooser || null == this.sensorChooser.Kinect)
+            {
+                return;
+            }
+
+            // will not function on non-Kinect for Windows devices
+            try
+            {
+                Console.WriteLine("Max angle: " + this.sensorChooser.Kinect.MaxElevationAngle + " Min angle " + this.sensorChooser.Kinect.MinElevationAngle);
+                int angle = int.Parse(desiredAngle.Text);
+                if (angle < this.sensorChooser.Kinect.MaxElevationAngle && angle > this.sensorChooser.Kinect.MinElevationAngle)
+                {
+                    this.sensorChooser.Kinect.ElevationAngle = angle;
+                    desiredAngle.Background = Brushes.White;
+                }
+
+            }
+            catch (System.FormatException)
+            {
+                desiredAngle.Background = Brushes.Yellow;
+            }
+            catch (InvalidOperationException)
+            {
+                desiredAngle.Background = Brushes.Red;
             }
         }
     }
